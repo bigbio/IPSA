@@ -13,7 +13,7 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
   }
 
   $scope.set = {
-    plotData: 
+    plotData:
     {
       x: [ ],
       y: [ ],
@@ -31,7 +31,7 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
 		sa: 0.0,
 		corr: 0.0
 	},
-    mirrorPlotData: 
+    mirrorPlotData:
     {
       x: [ ],
       y: [ ],
@@ -45,27 +45,27 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
       percentBasePeak: [ ],
       TIC: 0
     },
-    peptide: 
+    peptide:
     {
-      sequence: "TESTPEPTIDE", 
+      sequence: "TESTPEPTIDE",
 	  usi: 'mzspec:PXD015890:20190213_Rucks_atm6.raw (F002091).mzid_20190213_Rucks_atm6.raw_(F002091).MGF:index:914:YLDGLTAER/2',
-      precursorMz: 609.77229, 
+      precursorMz: 609.77229,
       precursorCharge: $scope.peptide.precursorCharge,
       mods: populateMods()
     },
-    settings: 
+    settings:
     {
       toleranceThreshold: 0,
       toleranceType: "",
       ionizationMode: ""
     }
   };
-  
+
   $scope.n = 150;
-  
-  
+
+
   $scope.min = 0;
-  
+
   $scope.max = 100;
 
   $scope.randomize = function() {
@@ -94,15 +94,15 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
   };
 
   $scope.plotData = function(returnedData) {
-    $scope.set.peptide = 
+    $scope.set.peptide =
     {
-      sequence: returnedData.sequence, 
-      precursorMz: returnedData.precursorMz, 
+      sequence: returnedData.sequence,
+      precursorMz: returnedData.precursorMz,
       precursorCharge: $scope.peptide.precursorCharge,
       mods: returnedData.modifications
     };
 
-    $scope.set.settings = 
+    $scope.set.settings =
     {
       toleranceThreshold: $scope.cutoffs.tolerance,
       toleranceType: $scope.cutoffs.toleranceType,
@@ -126,7 +126,7 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
     $scope.set.plotData.theoMz = [ ];
     $scope.set.plotData.percentBasePeak = [ ];
     $scope.set.plotData.TIC = 0;
-    
+
     returnedData.peaks.forEach(function(data) {
       $scope.set.plotData.x.push(data.mz);
       $scope.set.plotData.y.push(data.intensity);
@@ -168,7 +168,7 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
         } else {
           $scope.set.plotData.neutralLosses.push(fragment.neutralLoss);
         }
-        
+
         $scope.set.plotData.labelCharge.push(fragment.charge);
         // two label types, precursor, or regular label w/wo neutral losses
         if (fragment.hasOwnProperty("isPrecursor")) {
@@ -189,20 +189,20 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
   $scope.plotMirrorData = function(returnedData) {
     $scope.set.mirrorPlotData = returnedData;
   }
-  
+
   $scope.score = function(returnedData) {
     $scope.set.score = returnedData;
   }
-  
+
   $scope.processUSI = function() {
 	  //var usi = "https://www.ebi.ac.uk/pride/ws/archive/v2/spectrum?usi=mzspec:PXD015890:20190213_Rucks_atm6.raw (F002091).mzid_20190213_Rucks_atm6.raw_(F002091).MGF:index:914:YLDGLTAER/2";
-	  var url = "https://www.ebi.ac.uk/pride/ws/archive/v2/spectrum?usi=" + $scope.peptide.usi;
+	  var url = "https://www.ebi.ac.uk/pride/multiomics/ws/spectra/findByUsi?usi=" + $scope.peptide.usi;
 	  $http.get(url)
 		.then( function(response) {
-			var mzs = response.data.mzs;
+			var mzs = response.data.masses;
 			var ints = response.data.intensities;
-			var seq = response.data.peptideSequence;
-			var charge = response.data.charge;
+			var seq = response.data.pepSequence;
+			var charge = response.data.precursorCharge;
 			$scope.peptide.sequence = seq;
 			$scope.peptide.precursorCharge = charge;
 			$scope.peptide.charge = charge - 1;
@@ -212,7 +212,7 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
 				}
 			);
 		});
-	  
+
   }
 
   $scope.processData = function() {
@@ -222,7 +222,7 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
     } else {
       url = "support/php/NegativeModeProcessData.php";
     }
-    
+
     let submitData;
 
     if ($scope.invalidColors()) {
@@ -281,15 +281,15 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
       $scope.submittedData = data;
       let modString = "";
       if ($scope.modObject.selectedMods != undefined) {
-          $scope.modObject.selectedMods.sort((x,y) => {return x.index > y.index});          
+          $scope.modObject.selectedMods.sort((x,y) => {return x.index > y.index});
           $scope.modObject.selectedMods.forEach(function(mod) {
               if (modString != ""){
-                  modString +=",";              
+                  modString +=",";
               }
               modString += mod.name + "@"+mod.site + (mod.index+1);
           });
       }
-	  
+
 	  var ionColors = {
 		a: $scope.checkModel.a.color,
 		b: $scope.checkModel.b.color,
@@ -298,7 +298,7 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
 		y: $scope.checkModel.y.color,
 		z: $scope.checkModel.z.color
 	};
-      // httpRequest to submit data to processing script. 
+      // httpRequest to submit data to processing script.
 	  $http.post(url, data)
         .then( function(response) {
 
@@ -327,14 +327,14 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
 					    var pearson_correlation = ipsa_helper["comparison"]["pearson_correlation"](mergedSpectrum["intensity_1"], mergedSpectrum["intensity_2"]);
 
 					    $scope.score(
-							{ 
+							{
 								sa : Math.round(spectral_angle * 100)/100,
 								corr: Math.round(pearson_correlation * 100)/100
 							}
 						);
 					}, function(response2) {
 					    // if errors exist, alert user
-					    alert("Prosit: " + response2.data.message);  
+					    alert("Prosit: " + response2.data.message);
 					});
                 }
 				else if ($scope.mirrorModel.api === 'ProteomeTools'){
@@ -345,41 +345,41 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
 						var spec = getClosestCESpectrum(res2, parseInt($scope.mirrorModel.ce, 10));
 						$scope.mirrorModel.ce = spec.collissionEnergy;
 						$scope.plotMirrorData(transform2scope(spec, ionColors));
-							
+
 						var topSpectrumB = ipsa_helper["binning"](response.data.peaks);
 						var bottomSpectrumB = ipsa_helper["binning"](spec.ions);
-							
+
 						var mergedSpectrum = ipsa_helper["aligning"](topSpectrumB, bottomSpectrumB);
 						//calculate similarity scores
 					    var spectral_angle = ipsa_helper["comparison"]["spectral_angle"](mergedSpectrum["intensity_1"], mergedSpectrum["intensity_2"]);
 					    var pearson_correlation = ipsa_helper["comparison"]["pearson_correlation"](mergedSpectrum["intensity_1"], mergedSpectrum["intensity_2"]);
 
 					    $scope.score(
-							{ 
+							{
 								sa : Math.round(spectral_angle * 100)/100,
 								corr: Math.round(pearson_correlation * 100)/100
 							}
 						);
 					}, function(response2) {
 						// if errors exist, alert user
-						alert("ProteomeTools: " + response2.data.message);  
+						alert("ProteomeTools: " + response2.data.message);
 					});
 				}
-				
+
             }
         }, function (response) {
-            // if errors exist, alert user          
+            // if errors exist, alert user
             alert(response.data.message);
         });
     }
   };
-  
+
   $scope.invalidColors = function() {
     $scope.colorArray = [];
 
     // Add colors to array if selected and valid
     angular.forEach($scope.checkModel, function (value, key) {
-      if (key !== "H2O" && key !== "NH3" && key !== "HPO3" && key !== "CO2") {  
+      if (key !== "H2O" && key !== "NH3" && key !== "HPO3" && key !== "CO2") {
         if (!$scope.checkHex(value.color)) {
           alert("Invalid color HEX code for selected fragment: " + key);
           return true;
@@ -405,9 +405,9 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
 
     // write CV peptide sequence header
     csvRows.push("Sequence, Theoretical Mz, Charge, Modifications <Name;Index;Mass Change>, # Matched Fragments, # Bonds Broken, % TIC Explained");
-    csvRows.push($scope.set.peptide.sequence + "," + d3.format("0.4f")($scope.set.peptide.precursorMz) + "," + $scope.set.peptide.precursorCharge + "," + 
+    csvRows.push($scope.set.peptide.sequence + "," + d3.format("0.4f")($scope.set.peptide.precursorMz) + "," + $scope.set.peptide.precursorCharge + "," +
       $scope.formatModsForDownload() + "," + $scope.getNumberFragments() + "," + $scope.getFragmentedBonds() + "," + $scope.getPercentTicExplained());
-    
+
     csvRows.push("");
 
     // matched fragments headers
@@ -519,7 +519,7 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
 
       returnString += "\"";
     }
-    
+
     return returnString;
   };
 
@@ -545,7 +545,7 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
       var label = $scope.set.plotData.label[i];
 
       if (label) {
-        var type = $scope.getFragmentType(label); 
+        var type = $scope.getFragmentType(label);
         var number = $scope.getFragmentNumber(label);
         var mods = $scope.getFragmentModifications(type, number);
         mods = $scope.formatReturnedModsForDownload(mods);
@@ -563,7 +563,7 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
         var percentBasePeak = $scope.set.plotData.percentBasePeak[i];
         var percentTIC = intensity / $scope.set.plotData.TIC;
 
-        row += type + "," + number + "," + mods + ", " + neutralLoss + "," + charge + "," + intensity + "," +  d3.format("0.4f")(mz) + "," +  d3.format("0.4f")(theoMz) + "," + 
+        row += type + "," + number + "," + mods + ", " + neutralLoss + "," + charge + "," + intensity + "," +  d3.format("0.4f")(mz) + "," +  d3.format("0.4f")(theoMz) + "," +
           d3.format("0.4f")(error) + "," + d3.format("0.2f")(percentBasePeak) + "%," + d3.format("0.2%")(percentTIC);
         fragmentRows.push(row);
       }
@@ -607,7 +607,7 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
 
     possibleMods.forEach(function(mod) {
       if (mod.deltaMass) {
-        returnArray.push(mod); 
+        returnArray.push(mod);
       }
     });
 
@@ -617,14 +617,14 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
 
 	if ( typeof $scope.peptide.usi !== 'undefined' && $scope.peptide.usi.length !== 0){
 		setTimeout(function(){$scope.processUSI()}, 1000);
-  
+
 		setTimeout(function(){
 	    $scope.checkModel.b.selected = true;
 	    $scope.checkModel.y.selected = true;
 	    $scope.mirrorModel.api = 'Prosit';
-	  
+
 	    $scope.processData();
-	  }, 
+	  },
 	  2000);
 	}
 }]);
