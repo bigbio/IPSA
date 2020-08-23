@@ -206,11 +206,28 @@ angular.module("IPSA.spectrum.controller").controller("GraphCtrl", ["$scope", "$
 			$scope.peptide.sequence = seq;
 			$scope.peptide.precursorCharge = charge;
 			$scope.peptide.charge = charge - 1;
+
+			// Parse protein accessions and convert into urls.
+			$scope.db.proteinAccessions = response.data.proteinAccessions.map(
+        (x) => {
+          var accession = x
+          if(x.startsWith("ENSP", 0))
+            accession = "<a href='https://www.ensembl.org/Multi/Search/Results?q=" + x + ">'" + x + "</a>"
+          else
+            accession = "<a href='https://www.uniprot.org/uniprot/" + x + ">'" + x + "</a>"
+          return {id: accession};
+        }
+      );
 			$scope.db.items = mzs.map(
 				(x,i) => {
 					return {mZ: x, intensity: ints[i]};
 				}
 			);
+			$scope.db.proteins = response.data.proteinAccessions.map(
+        (x, i) => {
+          return {};
+        }
+      );
 		});
 
   }

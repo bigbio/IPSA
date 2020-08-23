@@ -10,7 +10,7 @@ myApp.config(function(uiSelectConfig) {
 
 /* master controller to carry similar functionality to $rootScope */
 myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, $http, $element, $attrs, $transclude) {
-	
+
    $scope.getUrlVars = function() {
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -18,7 +18,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
     });
     return vars;
 	};
-	
+
   // stores peptide information
   $scope.peptide = {
     sequence: "TESTPEPTIDE",
@@ -28,7 +28,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
     fragmentMax: 1,
 	usi: $scope.getUrlVars().usi
   };
-  
+
 
   // stores the values for selected fragments and colors
   $scope.checkModel = {
@@ -52,8 +52,8 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
 	api: ''
   };
 
-  $scope.checkResults = { 
-    string: "unmatched", 
+  $scope.checkResults = {
+    string: "unmatched",
     colors: "#A6A6A6",
     colorArray: []
   };
@@ -67,20 +67,21 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
 
   $scope.db.columns = [
     {
-      data:"mZ", 
-      title :"Mass To Charge", 
-      type: "numeric", 
-      format: "0,0,0.0000" 
+      data:"mZ",
+      title :"Mass To Charge",
+      type: "numeric",
+      format: "0,0,0.0000"
     },
     {
-      data:"intensity", 
-      title :"Intensity", 
-      type: "numeric", 
-      format: "0,0,0.0000" 
+      data:"intensity",
+      title :"Intensity",
+      type: "numeric",
+      format: "0,0,0.0000"
     }
   ];
 
   $scope.db.items = [];
+  $scope.db.samplePropertiesTableInstance = []
 
   $scope.annotatedResults;
 
@@ -123,7 +124,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
     // get potential mods from text file
     if ($scope.predeterminedMods.length == 0) {
       var text = 'Mods not yet loaded.';
-      $http.get('support/mods/Modifications.txt') 
+      $http.get('support/mods/Modifications.txt')
         .then(function (data) {
           text = data.data.split("\r\n");
           var tempArray = [];
@@ -157,9 +158,9 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
               var mod = $scope.potentialMods[j];
               var addMod = {};
               if (mod.site.charAt(0) == char && mod.site != "N-terminus" && mod.site != "C-terminus") {
-                
+
                 if (mod.hasOwnProperty("deltaMass")) {
-                  addMod = 
+                  addMod =
                   {
                     name: mod.name,
                     site: mod.site,
@@ -167,7 +168,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
                     deltaMass: mod.deltaMass
                   };
                 } else {
-                  addMod = 
+                  addMod =
                   {
                     name: mod.name,
                     site: mod.site,
@@ -175,13 +176,13 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
                     elementChange: mod.elementChange
                   };
                 }
-                
+
                 if (!contains(addMod)) {
                   $scope.mods.push(addMod);
                 }
               } else if (mod.site == "N-terminus") {
                 if (mod.hasOwnProperty("deltaMass")) {
-                  addMod = 
+                  addMod =
                   {
                     name: mod.name,
                     site: mod.site,
@@ -189,7 +190,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
                     deltaMass: mod.deltaMass
                   };
                 } else {
-                  addMod = 
+                  addMod =
                   {
                     name: mod.name,
                     site: mod.site,
@@ -202,7 +203,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
                 }
               } else if (mod.site == "C-terminus") {
                 if (mod.hasOwnProperty("deltaMass")) {
-                  addMod = 
+                  addMod =
                   {
                     name: mod.name,
                     site: mod.site,
@@ -210,7 +211,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
                     deltaMass: mod.deltaMass
                   };
                 } else {
-                  addMod = 
+                  addMod =
                   {
                     name: mod.name,
                     site: mod.site,
@@ -244,9 +245,9 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
           var mod = $scope.potentialMods[j];
           var addMod = {};
           if (mod.site.charAt(0) == char && mod.site != "N-terminus" && mod.site != "C-terminus") {
-            
+
             if (mod.hasOwnProperty("deltaMass")) {
-              addMod = 
+              addMod =
               {
                 name: mod.name,
                 site: mod.site,
@@ -254,7 +255,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
                 deltaMass: mod.deltaMass
               };
             } else {
-              addMod = 
+              addMod =
               {
                 name: mod.name,
                 site: mod.site,
@@ -262,13 +263,13 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
                 elementChange: mod.elementChange
               };
             }
-            
+
             if (!contains(addMod)) {
               $scope.mods.push(addMod);
             }
           } else if (mod.site == "N-terminus") {
             if (mod.hasOwnProperty("deltaMass")) {
-              addMod = 
+              addMod =
               {
                 name: mod.name,
                 site: mod.site,
@@ -276,7 +277,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
                 deltaMass: mod.deltaMass
               };
             } else {
-              addMod = 
+              addMod =
               {
                 name: mod.name,
                 site: mod.site,
@@ -289,7 +290,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
             }
           } else if (mod.site == "C-terminus") {
             if (mod.hasOwnProperty("deltaMass")) {
-              addMod = 
+              addMod =
               {
                 name: mod.name,
                 site: mod.site,
@@ -297,7 +298,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
                 deltaMass: mod.deltaMass
               };
             } else {
-              addMod = 
+              addMod =
               {
                 name: mod.name,
                 site: mod.site,
@@ -331,7 +332,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
           if ($scope.potentialUserMod.name) {
             if ($scope.userModSites.selected.length > 0) {
               if ($scope.potentialUserMod.deltaMass != 0) {
-                
+
                 $scope.userModSites.selected.forEach(function(site) {
                   $scope.userMods.push({
                     name: $scope.potentialUserMod.name,
@@ -339,7 +340,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
                     deltaMass: $scope.potentialUserMod.deltaMass
                   });
                 });
-                
+
                 $localStorage.userMods = $scope.userMods;
                 $uibModalInstance.close();
               } else {
@@ -353,7 +354,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
           }
 
         };
-        
+
         $scope.clearMods = function() {
           if (confirm("Are you sure you want to clear all user mods from your history? This cannot be undone.")) {
             $localStorage.userMods = [];
@@ -378,7 +379,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
     }).result.then(function(){}, function(result){})
   };
 
-  $scope.potentialUserMod = 
+  $scope.potentialUserMod =
     {
       name: "",
       site: "",
@@ -391,7 +392,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
     toleranceType: "ppm",
     tolerance: 10
   };
-  
+
   $scope.searchUSI = function() {
 	  $scope.processUSI();
   }
@@ -404,7 +405,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
 
       if (!regex.exec(character)) {
         i--;
-        
+
         $scope.peptide.sequence = $scope.peptide.sequence.replace(character, "");
         alert(character + " is not a valid amino acid. Only the 20 canonical amino acids are supported.");
       }
@@ -433,7 +434,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
       $scope.cutoffs.matchingCutoff = 0;
     }
   }
-  
+
   $scope.swapCE = function() {
       $scope.cutoffs.matchingType = "% Base Peak";
   }
@@ -453,7 +454,7 @@ myApp.controller('MasterCtrl', function($scope, $uibModal, $log, $localStorage, 
       // positive mode
     }
 
-    // check to make sure precursor charge is a valid value (not -1, 0, 1) 
+    // check to make sure precursor charge is a valid value (not -1, 0, 1)
     if ($scope.peptide.precursorCharge == 0 || $scope.peptide.precursorCharge == 1) {
       $scope.peptide.precursorCharge = 2;
       $scope.peptide.charge = 1;
@@ -546,29 +547,29 @@ myApp.controller('PeptideCtrl', function ($scope) {
   $scope.incrementCharge = function() {
     $scope.peptide.charge++;
   }
-  
+
 });
 
 //controller for generating data paste dropdown and handsonTable
 myApp.directive("handsontabletest", function() {
-  
+
   return{
     templateUrl: 'support/html/HotTableTemplate.html',
     controller: function($scope, $element, $attrs, $transclude, $log) {
-      
+
       $scope.afterInit = function() {
         $scope.handsonTableInstance = this;
       };
 
       $scope.db.items = [];
-      
+
       $scope.handleFormat = function(item) {
         $scope.selectedFormat = item;
         if ($scope.selectedFormat.id == 1) {
           $scope.db.columns = [];
           $scope.db.columns.push({data:"mZ", title :"Mass To Charge", type: "numeric", format: "0,0,0.0000"});
           $scope.db.columns.push({data:"intensity", title :"Intensity", type: "numeric", format: "0,0,0.0000"});
-        } 
+        }
         else {
           $scope.db.columns = [];
           $scope.db.columns.push({data:"mZ", title :"Mass To Charge", type: "numeric", format: "0,0,0.0000"});
@@ -585,7 +586,7 @@ myApp.directive("handsontabletest", function() {
 });
 
 myApp.controller('DataCtrl', ['$scope', function ($scope) {
-    $scope.selectedFormat = $scope.tableColumns[0];      
+    $scope.selectedFormat = $scope.tableColumns[0];
 }]);
 
 myApp.controller('ModCtrl', ['$scope', '$log', function ($scope, $log) {
@@ -593,7 +594,7 @@ myApp.controller('ModCtrl', ['$scope', '$log', function ($scope, $log) {
       var returnString = mod.name + ": " + mod.site;
 
       if (mod.index != -1 && mod.index != $scope.peptide.sequence.length) {
-        returnString += mod.index + 1 
+        returnString += mod.index + 1
       }
 
       returnString += " (";
